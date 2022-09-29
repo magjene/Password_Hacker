@@ -38,3 +38,18 @@ Example 2:
 > python hack.py 127.0.0.1 9090 qwerty
 Connection Success!
 """
+
+
+import socket
+
+
+host_name, port, message = input().split()
+message = message.encode()
+port = int(port)
+
+with socket.socket() as client_socket:
+    client_socket.connect((host_name, port))
+    client_socket.send(message)
+    response = client_socket.recv(1024)
+    response = response.decode()
+    print(response)
