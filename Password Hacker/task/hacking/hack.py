@@ -41,9 +41,10 @@ Connection Success!
 
 
 import socket
+import sys
 
 
-host_name, port, message = input().split()
+file_name, host_name, port, message = sys.argv
 message = message.encode()
 port = int(port)
 
