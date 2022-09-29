@@ -30,11 +30,26 @@ pass
 
 import socket
 import sys
+import itertools
 
 
-host_name, port, message = sys.argv[1:]
+password_list = ['a', 'b', 'c', 'd', 'e', 'f', 'g',
+                 'h', 'i', 'j', 'k', 'l', 'm', 'n',
+                 'o', 'p', 'q', 'r', 's', 't', 'u',
+                 'v', 'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+
+password_list.extend(list(itertools.product(password_list, password_list)))
+
+host_name, port = sys.argv[1:]
 with socket.socket() as client_socket:
     client_socket.connect((host_name, int(port)))
-    client_socket.send(message.encode())
-    response = client_socket.recv(1024).decode()
-    print(response)
+    for password in password_list:
+        if isinstance(password, tuple):
+            password = password[0] + password[1]
+        client_socket.send(password.encode())
+        response = client_socket.recv(1024).decode()
+        if response == 'Connection success!':
+            print(password)
+            break
+    else:
+        print('Wrong password!')
