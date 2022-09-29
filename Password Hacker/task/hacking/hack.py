@@ -44,13 +44,9 @@ import socket
 import sys
 
 
-file_name, host_name, port, message = sys.argv
-message = message.encode()
-port = int(port)
-
+host_name, port, message = sys.argv[1:]
 with socket.socket() as client_socket:
-    client_socket.connect((host_name, port))
-    client_socket.send(message)
-    response = client_socket.recv(1024)
-    response = response.decode()
+    client_socket.connect((host_name, int(port)))
+    client_socket.send(message.encode())
+    response = client_socket.recv(1024).decode()
     print(response)

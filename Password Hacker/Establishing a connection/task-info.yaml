@@ -107,20 +107,8 @@ files:
   text: '# write your code here'
   learner_created: false
 feedback_link: https://hyperskill.org/projects/80/stages/442/implement#comment
-status: Failed
+status: Solved
 feedback:
-  message: |-
-    Wrong answer in test #1
-
-    The line you printed is not the one sent by server
-
-    Please find below the output of your program during this failed test.
-
-    ---
-
-    Arguments: localhost 9090 3d
-
-    <class 'str'>
-    Wrong password!
-  time: Thu, 29 Sep 2022 15:50:17 UTC
+  message: Congratulations!
+  time: Thu, 29 Sep 2022 15:55:49 UTC
 record: -1
