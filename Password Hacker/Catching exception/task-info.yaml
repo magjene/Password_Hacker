@@ -1211,5 +1211,13 @@ files:
   visible: true
   learner_created: true
 feedback_link: https://hyperskill.org/learn/step/7219#comment
-status: Unchecked
-record: -1
+status: Failed
+feedback:
+  message: |-
+    Wrong answer in test #1
+
+    The output of your program is not a valid JSON:
+
+    Arguments: localhost 9090
+  time: Fri, 30 Sep 2022 17:48:23 UTC
+record: 4
