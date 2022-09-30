@@ -34,7 +34,7 @@ import socket
 import sys
 
 
-with open(r'D:\pythonProject\Password Hacker\Password Hacker\task\hacking\passwords.txt', 'r') as file:
+with open(r'.\hacking\passwords.txt', 'r') as file:
     password_list = file.read().split()
 
 host_name, port = sys.argv[1:]
