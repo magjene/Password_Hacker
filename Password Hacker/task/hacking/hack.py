@@ -1,31 +1,70 @@
 """
 Project: Password Hacker
-Stage 3/5: Smarter, dictionary-based brute force
+Stage 4/5: Catching exception
 
 
 Description
-Looks like you can already call yourself a hacker! However, the situation gets more complicated: the admin improves the server and our simple brute force attack is no longer working. Well, this shouldn't hold you back: you can provide your program with a prepared dictionary of typical passwords (it was generated using a database with over a million real-life passwords).
+The server is becoming smarter along with your hacking program. Now the admin has implemented a security system by login and password. In order to access the site with admin privileges, you need to know the admin's login and password. Fortunately, we have a dictionary of different logins and a very interesting vulnerability. You need to improve your program once again to hack the new system.
 
-That's not all: the admin decided to outsmart us and changed the case of some letters in the new password so that we could not crack it using the password dictionary. Let's outsmart the admin and try all possible combinations of upper and lower case for each letter for all words of the password dictionary. We won't have to try too much since for a 6-letter word you'll get only 64 possible combinations.
+Also, now the admin has made a complex password that is guaranteed to be absent in the databases since it's randomly generated from several characters.
 
-Now you need not only to try each element of the dictionary but also change the case of some letters to find the correct password.
+The server now uses JSON to send messages.
 
-This has increased the time of hacking greatly, so using brute force is probably not an option. Use the dictionary of standard passwords, and do not forget to try changing the cases of different letters. For example, there is the word ‘qwerty’ in the dictionary, but the cunning admin sets it to ‘qWeRTy’. Your program should make it possible to hack such passwords, too.
+First of all, you should adjust your program so that it can send the combination of login and password in JSON format to the server. Your request should now look like this:
+
+{
+    "login": "admin",
+    "password": "12345678"
+}
+In case of the wrong login, the response you receive looks like this:
+
+{
+    "result": "Wrong login!"
+}
+If you got the login right but failed to find the password, you get this:
+
+{
+    "result": "Wrong password!"
+}
+If some exception happens, you'll see this result:
+
+{
+    "result": "Exception happened during login"
+}
+When you finally succeed in finding both the login and the password, you'll see the following:
+
+{
+    "result": "Connection success!"
+}
+Use the dictionary of typical admin logins. Since you don’t know the login, you should try different variants from the dictionary the same way you did at the previous stage with the passwords.
+
+Use an empty password while searching for the correct login. It matters because you will know that the login is correct the moment you get the ‘wrong password’ result instead of ‘wrong login’.
+As for passwords, they’ve become yet harder, so a simple dictionary is no longer enough. Fortunately, a vulnerability has been found: the ‘exception’ message pops up when the symbols you tried for the password match the beginning of the correct one.
 
 Objectives
-In this stage, you should write a program that:
+Your algorithm is the following:
 
-Parses the command line and gets two arguments that are IP address and port.
-Finds the correct password using the list of typical passwords.
-Prints the password it found.
-Put the file with typical passwords into your working directory which you can find with a little help of the os module.
-Note that here and throughout the project, the password is different every time you check your code.
+Try all logins with an empty password.
+When you find the login, try out every possible password of length 1.
+When an exception occurs, you know that you found the first letter of the password.
+Use the found login and the found letter to find the second letter of the password.
+Repeat until you receive the ‘success’ message.
+Finally, your program should print the combination of login and password in JSON format. The examples show two ways of what the output can look like.
 
-Example
+Examples
 The greater-than symbol followed by a space (> ) represents the user input. Note that it's not part of the input.
 
+Example 1:
+
 > python hack.py localhost 9090
-qWeRTy
+{
+    "login" : "superuser",
+    "password" : "aDgT9tq1PU0"
+}
+Example 2:
+
+> python hack.py localhost 9090
+{"login": "new_user", "password": "Sg967s"}
 """
 
 
