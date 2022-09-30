@@ -73,8 +73,8 @@ import socket
 import sys
 
 
-with open(r'.\hacking\passwords.txt', 'r') as file:
-    password_list = file.read().split()
+with open(r'.\hacking\logins.txt', 'r') as login_file:
+    login_list = login_file.read().split()
 
 host_name, port = sys.argv[1:]
 with socket.socket() as client_socket:
